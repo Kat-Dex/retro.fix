@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use App\Models\Tag;
 
 class Guide extends Model
 {
@@ -15,5 +16,8 @@ class Guide extends Model
     }
     public function setFilenamesAttribute($value){
         $this->attributes['guide_image']=json_encode($value);
+    }
+    public function tag(){
+        return $this->belongsTo(Tag::class);
     }
 }

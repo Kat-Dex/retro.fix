@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Guide;
+use App\Models\Tag;
+use Illuminate\Support\Facades\DB;
 
 class GuideController extends Controller
 {
@@ -75,6 +77,11 @@ class GuideController extends Controller
         $guide->guide_image = implode(" ", $images);
         $guide->guide_contents = implode(" ", $texts);
         $guide->save();
+        $tags = [];
+        $tags = explode(',', $request->guide_tags);
+        for ($i = 0; $i < count($tags); $i++){
+            Tag::updateOrCreate(['tag_name' => $tags[$i]]);
+        }
         return redirect('guide/');
 }
 
@@ -125,18 +132,18 @@ class GuideController extends Controller
         //
     }
 
+
+
     public function showSearch(){
-        return view ('search');
+        $tags=Tag::all();
+        return view ('search', compact('tags'));
     }
 
     public function search(Request $request){
-        // $search = $request->input('guides');
-
-        // $guides = Guide::where('guide_tags', 'like', '%search%')->get();
-        // return view('results')->with('guide_tags', $guides);
-        $query = Guide::all();
+        $query = DB::table('guides');
         $query = $query->where('guides.guide_tags', 'LIKE', '%'.$request->guide_tags.'%');
-        $query = $query->select('guides.guide_tags');
-        return view('results', array('guides'));
+        $query = $query->select('guides.*');
+        return view('results', array('guides' => $query->get()));
     }
+
 }
